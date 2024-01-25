@@ -1,10 +1,10 @@
 import path from "path";
 import fs from "fs";
-import {list} from "../fs/list.js";
 import {availableCommands} from "./constants.js";
 import os from "os";
 import * as crypto from "crypto";
 import zlib from "zlib";
+import {getPathInfo} from "../utils.js";
 
 class MyFsClass {
   constructor(rootDirectory) {
@@ -20,24 +20,46 @@ class MyFsClass {
   }
 
   cd = (dirname) => {
-    this.__dirname = path.resolve(this.__dirname, dirname)
+    if (!dirname) {
+      throw new Error('No path was provided.')
+    }
+    const newPath = path.resolve(this.__dirname, dirname)
+    const {isFileExist, isDirectory} = getPathInfo(newPath)
+    if (!isFileExist) {
+      throw new Error(`Provided invalid path to directory. The path ${newPath} does not exist.`)
+    }
+    if (!isDirectory) {
+      throw new Error(`Provided invalid path to directory. ${newPath} is not directory.`)
+    }
+    this.__dirname = newPath
   }
 
-  cp = (copyFilename, newFilename) => {
+  cp = (copyFilename, destination) => {
+    if (!copyFilename || !destination) {
+      throw new Error('Provided an insufficient amount of arguments')
+    }
+    const copyFullPath = path.resolve(this.__dirname, copyFilename)
+    const destinationFullPath = path.resolve(this.__dirname, destination, copyFilename)
+    const {isFileExist: isCopyFileExist, isDirectory} = getPathInfo(copyFullPath)
+    const {isFileExist: isNewFileExist} = getPathInfo(destinationFullPath)
+    if (!isCopyFileExist) {
+      throw new Error(`Provided invalid path to file. The path ${copyFullPath} does not exist.`)
+    }
+    if (isDirectory) {
+      throw new Error(`Provided invalid path to file. ${copyFullPath} is directory.`)
+    }
+    if (isNewFileExist) {
+      throw new Error(`The file ${destinationFullPath} already exists.`)
+    }
+
     return new Promise((resolve, reject) => {
-      try {
-        const copyFullPath = path.resolve(this.__dirname, copyFilename)
-        const newFullPath = path.resolve(this.__dirname, newFilename)
-        this.add(newFullPath)
-        const readable = fs.createReadStream(copyFullPath)
-        const writable = fs.createWriteStream(newFullPath)
-        const a = readable.pipe(writable)
-        writable.on('finish', () => {
-          resolve()
-        })
-      } catch (err) {
-        console.log(err)
-      }
+      this.add(destinationFullPath)
+      const readable = fs.createReadStream(copyFullPath)
+      const writable = fs.createWriteStream(destinationFullPath)
+      readable.pipe(writable)
+      writable.on('finish', () => {
+        resolve()
+      })
     })
   }
 
@@ -52,8 +74,17 @@ class MyFsClass {
   }
 
   rn = (oldName, newName) => {
+    if (!oldName || !newName) {
+      throw new Error('Provided an insufficient amount of arguments')
+    }
     const oldFullPath = path.resolve(this.__dirname, oldName)
     const newFullPath = path.resolve(this.__dirname, newName)
+    const {isFileExist} = getPathInfo(oldFullPath)
+
+    if (!isFileExist) {
+      throw new Error(`Provided invalid path to file. The file ${oldFullPath} does not exist.`)
+    }
+
     fs.renameSync(oldFullPath, newFullPath)
   }
 
@@ -62,9 +93,20 @@ class MyFsClass {
     fs.unlinkSync(fullPath)
   }
 
-  cat = (pathToFile) => {
+  cat = (filename) => {
+    const pathToFile = path.resolve(this.__dirname, filename)
     return new Promise((resolve) => {
-      const readable = fs.createReadStream(path.resolve(this.__dirname, pathToFile))
+      if (!filename) {
+        throw new Error('No file was provided.')
+      }
+      const {isDirectory, isFileExist} = getPathInfo(pathToFile)
+      if (!isFileExist) {
+        throw new Error(`Provided invalid path to file. The file ${pathToFile} does not exist.`)
+      }
+      if (isDirectory) {
+        throw new Error(`Provided invalid path to file. ${pathToFile} is directory.`)
+      }
+      const readable = fs.createReadStream(pathToFile)
       readable.pipe(process.stdout)
       readable.on('end', () => {
         process.stdout.write('\n')
@@ -74,6 +116,9 @@ class MyFsClass {
   }
 
   add = (filename) => {
+    if (!filename) {
+      throw new Error('No file was provided.')
+    }
     fs.appendFileSync(path.resolve(this.__dirname, filename), '')
   }
 
@@ -81,7 +126,8 @@ class MyFsClass {
     const allFiles = fs.readdirSync(this.__dirname)
     const {dirs, files} = allFiles.reduce((acc, file) => {
       const filePath = path.resolve(this.__dirname, file)
-      if (fs.lstatSync(filePath).isDirectory()) {
+      const {isDirectory} = getPathInfo(filePath)
+      if (isDirectory) {
         return {...acc, dirs: [...acc.dirs, {type: 'directory', name: file}]}
       } else {
         return {...acc, files: [...acc.files, {type: 'file', name: file}]}

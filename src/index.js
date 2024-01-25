@@ -21,104 +21,129 @@ const init = () => {
     switch (command) {
       case 'up': {
         myFS.goUp()
-        myFS.printCurrentLocation()
         break
       }
       case 'ls': {
-        await myFS.ls(compareSort)
-        myFS.printCurrentLocation()
+        try {
+          await myFS.lcds(compareSort)
+        } catch (err) {
+          console.log(err.message)
+        }
         break
       }
       case 'add': {
-        myFS.add(params[0])
-        myFS.printCurrentLocation()
+        try {
+          myFS.add(...params)
+        } catch (err) {
+          console.log(err.message)
+        }
         break
       }
       case 'cat': {
-        await myFS.cat(params.join(' '))
-        myFS.printCurrentLocation()
+        try {
+          await myFS.cat(...params)
+        } catch (err) {
+          console.log(err.message)
+        }
         break
       }
       case 'rn': {
-        myFS.rn(params[0], params[1])
-        myFS.printCurrentLocation()
+        try {
+          myFS.rn(...params)
+        } catch (err) {
+          console.log(err.message)
+        }
         break
       }
       case 'cp': {
-        await myFS.cp(params[0], params[1])
-        myFS.printCurrentLocation()
+        try {
+          await myFS.cp(...params)
+        } catch (err) {
+          console.log(err.message)
+        }
         break
       }
       case 'mv': {
-        await myFS.mv(params[0], params[1])
-        myFS.printCurrentLocation()
+        try {
+          await myFS.mv(...params)
+        } catch (err) {
+          console.log(err.message)
+        }
         break
       }
       case 'rm': {
-        myFS.rm(params[0])
-        myFS.printCurrentLocation()
+        try {
+          myFS.rm(...params)
+        } catch (err) {
+          console.log(err.message)
+        }
         break
       }
       case 'cd': {
-        myFS.cd(params[0])
-        myFS.printCurrentLocation()
+        try {
+          myFS.cd(...params)
+        } catch (err) {
+          console.log(err.message)
+        }
         break
       }
       case 'hash': {
-        await myFS.hash(params[0])
-        myFS.printCurrentLocation()
+        try {
+          await myFS.hash(...params)
+        } catch (err) {
+          console.log(err.message)
+        }
         break
       }
       case 'compress': {
-        await myFS.compress(params[0], params[1])
-        myFS.printCurrentLocation()
+        try {
+          await myFS.compress(...params)
+        } catch (err) {
+          console.log(err.message)
+        }
         break
       }
       case 'decompress': {
-        await myFS.decompress(params[0], params[1])
-        myFS.printCurrentLocation()
+        try {
+          await myFS.decompress(...params)
+        } catch (err) {
+          console.log(err.message)
+        }
         break
       }
       case 'os': {
-        const arg = params[0] || null
-        switch (arg) {
+        switch (params[0] || null) {
           case '--EOL': {
             myFS.eol()
-            myFS.printCurrentLocation()
             break
           }
           case '--cpus': {
             myFS.cpus()
-            myFS.printCurrentLocation()
             break;
           }
           case '--homedir': {
             myFS.homedir()
-            myFS.printCurrentLocation()
             break;
           }
           case '--username': {
             myFS.username()
-            myFS.printCurrentLocation()
             break;
           }
           case '--architecture': {
             myFS.architecture()
-            myFS.printCurrentLocation()
             break;
           }
           default: {
             console.log(`Passed invalid argument - ${params[0]}`)
-            myFS.printCurrentLocation()
           }
         }
         break
       }
       default: {
         console.log(`Passed invalid command - ${command}`)
-        myFS.printCurrentLocation()
       }
     }
+    myFS.printCurrentLocation()
   })
 
   // process.stdin.on('keypress', (chunk, key) => {
