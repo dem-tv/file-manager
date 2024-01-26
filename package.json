@@ -7,7 +7,7 @@
   },
   "type": "module",
   "scripts": {
-    "start": "node src/index.js --username=tatuana"
+    "start": "node src/index.mjs --username=tatuana"
   },
   "repository": {
     "type": "git",

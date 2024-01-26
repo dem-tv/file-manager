@@ -1,5 +1,5 @@
-import {compareSort, getFileData} from "./utils.js";
-import MyFsClass from "./MyFSClass/MyFSClass.js";
+import {compareSort, getFileData} from "./utils.mjs";
+import MyFsClass from "./MyFSClass/MyFSClass.mjs";
 import os from "os";
 
 
@@ -25,7 +25,7 @@ const init = () => {
       }
       case 'ls': {
         try {
-          await myFS.lcds(compareSort)
+          await myFS.ls(compareSort)
         } catch (err) {
           console.log(err.message)
         }
@@ -111,6 +111,11 @@ const init = () => {
         }
         break
       }
+      case '.exit': {
+        process.stdout.write(`Thank you for using File Manager, ${username}, goodbye!\n`)
+        process.exit(0)
+        break
+      }
       case 'os': {
         switch (params[0] || null) {
           case '--EOL': {
@@ -146,20 +151,10 @@ const init = () => {
     myFS.printCurrentLocation()
   })
 
-  // process.stdin.on('keypress', (chunk, key) => {
-  //   if(key && key.name === "c" && key.ctrl) {
-  //     console.log(`Thank you for using File Manager, ${username}, goodbye!\n`);
-  //     process.kill(process.pid, 'SIGINT')
-  //   }
-  //
-  //   // console.log(chunk, key)
-  //   // process.stdout.write(`You are currently in ${__dirname}\n`)
-  // })
-
-  // process.on("SIGINT", () => {
-  //   process.stdout.write(`Thank you for using File Manager, ${username}, goodbye!\n`)
-  //   process.kill(process.pid, 'SIGINT')
-  // });
+  process.on("SIGINT", () => {
+    process.stdout.write(`Thank you for using File Manager, ${username}, goodbye!\n`)
+    process.kill(process.pid, 'SIGINT')
+  });
 }
 
 init()
