@@ -10,7 +10,7 @@ export const calculateHash = async (__dirname, pathToFile) => {
 
   const fullPathToFile = path.resolve(__dirname, pathToFile)
 
-  const {isDirectory, isFileExist} = getPathInfo(fullPathToFile)
+  const {isDirectory, isFileExist} = await getPathInfo(fullPathToFile)
 
   if (!isFileExist) {
     throw new Error(`Provided invalid path to file. The file ${fullPathToFile} does not exist.`)
@@ -24,6 +24,7 @@ export const calculateHash = async (__dirname, pathToFile) => {
     const fd = fs.createReadStream(fullPathToFile);
     const hash = crypto.createHash('sha256');
     hash.setEncoding('hex');
+    process.stdout.write(`Calculated hash for file ${fullPathToFile}:\n`)
     fd.pipe(hash).pipe(process.stdout);
     fd.on('end', function () {
       resolve()

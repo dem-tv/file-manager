@@ -9,8 +9,8 @@ export const copy = async (__dirname, copyFilename, destination) => {
   }
   const copyFullPath = path.resolve(__dirname, copyFilename)
   const destinationFullPath = path.resolve(__dirname, destination, copyFilename)
-  const {isFileExist: isCopyFileExist, isDirectory} = getPathInfo(copyFullPath)
-  const {isFileExist: isNewFileExist} = getPathInfo(destinationFullPath)
+  const {isFileExist: isCopyFileExist, isDirectory} = await getPathInfo(copyFullPath)
+  const {isFileExist: isNewFileExist} = await getPathInfo(destinationFullPath)
   if (!isCopyFileExist) {
     throw new Error(`Provided invalid path to file. The path ${copyFullPath} does not exist.`)
   }
@@ -21,8 +21,9 @@ export const copy = async (__dirname, copyFilename, destination) => {
     throw new Error(`The file ${destinationFullPath} already exists.`)
   }
 
+  await create(__dirname, destinationFullPath)
+
   return new Promise((resolve, reject) => {
-    create(__dirname, destinationFullPath)
     const readable = fs.createReadStream(copyFullPath)
     const writable = fs.createWriteStream(destinationFullPath)
     readable.pipe(writable)

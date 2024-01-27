@@ -10,9 +10,10 @@ const init = () => {
   const {__dirname} = getFileData(import.meta.url);
   const myFS = new MyFsClass(__dirname)
 
+  MyFsClass.printAvailableCommands()
   process.stdout.write(`Welcome to the File Manager, ${username}!\n`)
   myFS.printCurrentLocation()
-  myFS.printAvailableCommands()
+  process.stdout.write(`Enter any command. to exit the program, print .exit or press ctrl+c\n`)
 
   process.stdin.on('data', async (chunk) => {
     const stringedChunk = chunk.toString().trim()
@@ -33,7 +34,8 @@ const init = () => {
       }
       case 'add': {
         try {
-          myFS.add(...params)
+          await myFS.add(...params)
+          console.log('file created successfully')
         } catch (err) {
           console.log(err.message)
         }
@@ -49,7 +51,8 @@ const init = () => {
       }
       case 'rn': {
         try {
-          myFS.rn(...params)
+          await myFS.rn(...params)
+          console.log('file renamed successfully')
         } catch (err) {
           console.log(err.message)
         }
@@ -58,6 +61,7 @@ const init = () => {
       case 'cp': {
         try {
           await myFS.cp(...params)
+          console.log('file copied successfully')
         } catch (err) {
           console.log(err.message)
         }
@@ -66,6 +70,7 @@ const init = () => {
       case 'mv': {
         try {
           await myFS.mv(...params)
+          console.log('file moved successfully')
         } catch (err) {
           console.log(err.message)
         }
@@ -73,7 +78,8 @@ const init = () => {
       }
       case 'rm': {
         try {
-          myFS.rm(...params)
+          await myFS.rm(...params)
+          console.log('file removed successfully')
         } catch (err) {
           console.log(err.message)
         }
@@ -81,7 +87,7 @@ const init = () => {
       }
       case 'cd': {
         try {
-          myFS.cd(...params)
+          await myFS.cd(...params)
         } catch (err) {
           console.log(err.message)
         }
@@ -98,6 +104,7 @@ const init = () => {
       case 'compress': {
         try {
           await myFS.compress(...params)
+          console.log('file compressed successfully')
         } catch (err) {
           console.log(err.message)
         }
@@ -106,6 +113,7 @@ const init = () => {
       case 'decompress': {
         try {
           await myFS.decompress(...params)
+          console.log('file decompressed successfully')
         } catch (err) {
           console.log(err.message)
         }
@@ -114,6 +122,10 @@ const init = () => {
       case '.exit': {
         process.stdout.write(`Thank you for using File Manager, ${username}, goodbye!\n`)
         process.exit(0)
+        break
+      }
+      case 'help': {
+        MyFsClass.printAvailableCommands()
         break
       }
       case 'os': {

@@ -1,7 +1,7 @@
-import fs from "fs";
+import fsp from 'node:fs/promises';
 import path from "path";
 
-export const remove = async (__dirname, pathToFile) => {
+export const remove = (__dirname, pathToFile) => {
   const fullPath = path.resolve(__dirname, pathToFile)
-  fs.unlinkSync(fullPath)
+  return fsp.unlink(fullPath)
 };

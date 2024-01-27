@@ -1,6 +1,6 @@
 import path from "path";
 import {getPathInfo} from "../utils.mjs";
-import fs from "fs";
+import fsp from 'node:fs/promises';
 
 export const rename = async (__dirname, oldName, newName) => {
   if (!oldName || !newName) {
@@ -8,11 +8,15 @@ export const rename = async (__dirname, oldName, newName) => {
   }
   const oldFullPath = path.resolve(__dirname, oldName)
   const newFullPath = path.resolve(__dirname, newName)
-  const {isFileExist} = getPathInfo(oldFullPath)
+  const {isFileExist: isOldFileExist} = await getPathInfo(oldFullPath)
+  const {isFileExist: isNewFileExist} = await getPathInfo(newFullPath)
 
-  if (!isFileExist) {
-    throw new Error(`Provided invalid path to file. The file ${oldFullPath} does not exist.`)
+  if (!isOldFileExist) {
+    throw new Error(`Provided invalid path to file. The file ${isOldFileExist} does not exist.`)
+  }
+  if (isNewFileExist) {
+    throw new Error(`The file ${newFullPath} already exists.`)
   }
 
-  fs.renameSync(oldFullPath, newFullPath)
+  await fsp.rename(oldFullPath, newFullPath)
 };

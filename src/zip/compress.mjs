@@ -10,8 +10,8 @@ export const compress = async (__dirname, inputFilename, outputFilename) => {
   const pathToInput = path.resolve(__dirname, inputFilename)
   const pathToOutput = path.resolve(__dirname, outputFilename)
 
-  const {isDirectory: isInputDirectory, isFileExist: isInputExist} = getPathInfo(pathToInput)
-  const {isFileExist: isOutputExist} = getPathInfo(pathToOutput)
+  const {isDirectory: isInputDirectory, isFileExist: isInputExist} = await getPathInfo(pathToInput)
+  const {isFileExist: isOutputExist} = await getPathInfo(pathToOutput)
   if (!isInputExist) {
     throw new Error(`Provided invalid path to file. The file ${pathToInput} does not exist.`)
   }

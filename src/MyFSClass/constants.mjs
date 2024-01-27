@@ -35,8 +35,44 @@ export const availableCommands = [
     name: 'rm path_to_file',
     description: 'Delete file'
   },
-  // {
-  //   name: '',
-  //   description: ''
-  // },
+  {
+    name: 'hash path_to_file',
+    description: 'Calculate hash for file and print it into console'
+  },
+  {
+    name: 'compress path_to_file path_to_destination',
+    description: 'Compress file (using Brotli algorithm)'
+  },
+  {
+    name: 'decompress path_to_file path_to_destination',
+    description: 'Decompress file (using Brotli algorithm)'
+  },
+  {
+    name: 'os --EOL',
+    description: 'Get EOL (default system End-Of-Line)'
+  },
+  {
+    name: 'os --cpus',
+    description: 'Get host machine CPUs info'
+  },
+  {
+    name: 'os --homedir',
+    description: 'Get home directory'
+  },
+  {
+    name: 'os --username',
+    description: 'Get current system user name'
+  },
+  {
+    name: 'os --architecture',
+    description: 'Get CPU architecture for which Node.js binary has compiled'
+  },
+  {
+    name: '.exit',
+    description: 'Close program'
+  },
+  {
+    name: 'help',
+    description: 'Print all commands into console'
+  },
 ]

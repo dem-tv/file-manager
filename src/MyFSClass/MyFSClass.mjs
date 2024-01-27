@@ -18,6 +18,20 @@ class MyFsClass {
     this.__dirname = rootDirectory
   }
 
+  static #availableCommands = availableCommands;
+
+  static printAvailableCommands = () => {
+    console.log('Available commands:')
+    console.table(
+      this.#availableCommands.map(command => {
+        return {
+          "Command": command.name,
+          "Description": command.description,
+        };
+      })
+    );
+  }
+
   printCurrentLocation = () => {
     process.stdout.write(`You are currently in ${this.__dirname}\n`)
   }
@@ -26,12 +40,12 @@ class MyFsClass {
     this.__dirname = path.resolve(this.__dirname, '../')
   }
 
-  cd = (dirname) => {
+  cd = async (dirname) => {
     if (!dirname) {
       throw new Error('No path was provided.')
     }
     const newPath = path.resolve(this.__dirname, dirname)
-    const {isFileExist, isDirectory} = getPathInfo(newPath)
+    const {isFileExist, isDirectory} = await getPathInfo(newPath)
     if (!isFileExist) {
       throw new Error(`Provided invalid path to directory. The path ${newPath} does not exist.`)
     }
@@ -67,18 +81,6 @@ class MyFsClass {
 
   ls = (compareSort) => {
     return list(this.__dirname, compareSort)
-  }
-
-  printAvailableCommands = () => {
-    console.log('Available commands:')
-    console.table(
-      availableCommands.map(command => {
-        return {
-          "Command": command.name,
-          "Description": command.description,
-        };
-      })
-    );
   }
 
   eol = () => {

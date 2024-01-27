@@ -1,6 +1,6 @@
 import {fileURLToPath} from 'url';
 import {dirname} from 'path';
-import fs from "fs";
+import fsp from 'node:fs/promises';
 
 export const getFileData = (url) => {
   const __filename = fileURLToPath(url);
@@ -16,13 +16,24 @@ export const compareSort = (s1, s2) => {
   return 0;
 }
 
-export const getPathInfo = (path) => {
-  const isFileExist = fs.existsSync(path)
-  const isDirectory = isFileExist ? fs.lstatSync(path).isDirectory() : false
-  console.log({isFileExist,
-    isDirectory})
-  return {
-    isFileExist,
-    isDirectory
+export const getPathInfo = async (path) => {
+  try {
+    const s = await fsp.stat(path)
+    const isDirectory = s.isDirectory()
+
+    return {
+      isFileExist: true,
+      isDirectory
+    }
+  } catch (err) {
+    if (err.errno === -4058) {
+      return {
+        isFileExist: false,
+        isDirectory: false
+      }
+    } else {
+      console.log(err)
+      throw new Error(err)
+    }
   }
 }
